@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Управление информацией о звукозаписях</title>
+  <script src="sound_recording.js"></script>
+</head>
+<body>
+
+<h1>Управление информацией о звукозаписях</h1>
+
+<div>
+  <input type="button" value="Ввод информации о звукозаписи" onclick="AddRecord()">
+  <input type="button" value="Удаление информации о звукозаписи" onclick="DeleteRecord()">
+  <input type="button" value="Получение информации о звукозаписи" onclick="GetRecordInfo()">
+  <input type="button" value="Перечень всех звукозаписей" onclick="ListAllRecords()">
+</div>
+
+<script>
+  function AddRecord() {
+    let key = prompt("Введите название звукозаписи:");
+    if (key === null || key.trim() === "") {
+      console.log("Название не введено. Операция отменена.");
+      return;
+    }
+
+    let value = prompt("Введите описание звукозаписи:");
+    if (value === null) {
+      console.log("Описание не введено. Операция отменена.");
+      return;
+    }
+
+    AddValue(key.trim(), value.trim());
+    console.log(`Добавлена запись: "${key}"`);
+  }
+
+  function DeleteRecord() {
+    let key = prompt("Введите название звукозаписи для удаления:");
+    if (key === null || key.trim() === "") {
+      console.log("Название не введено. Операция отменена.");
+      return;
+    }
+
+    DeleteValue(key.trim());
+    console.log(`Удалена запись (если существовала): "${key}"`);
+  }
+
+  function GetRecordInfo() {
+    let key = prompt("Введите название звукозаписи для получения информации:");
+    if (key === null || key.trim() === "") {
+      console.log("Название не введено. Операция отменена.");
+      return;
+    }
+
+    let info = GetValueInfo(key.trim());
+    console.log(info);
+  }
+
+  function ListAllRecords() {
+    let list = ListValues();
+    if (list.trim() === "") {
+      console.log("В хранилище нет записей.");
+    } else {
+      console.log("Перечень всех звукозаписей:\n" + list);
+    }
+  }
+</script>
+
+</body>
+</html>
