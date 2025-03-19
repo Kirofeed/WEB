@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Динамическая форма</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 400px;
+    }
+    .field-container {
+      margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+    input[type="text"] {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus {
+      border-color: #66afe9;
+      outline: none;
+    }
+    input[type="checkbox"] {
+      margin-right: 5px;
+      transform: scale(1.2);
+    }
+    input[type="button"] {
+      background: #28a745;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    input[type="button"]:hover {
+      background: #218838;
+    }
+    .error {
+      color: red;
+      margin-top: 5px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <form name="dynamicForm"></form>
+
+  <script>
+    var FormA = [
+      { label: 'Как Вас зовут?:', elemtype: 'text1line', name: 'developers', width: 200 },
+      { label: 'E-Mail:', elemtype: 'text1line', name: 'email', width: 300 },
+      { label: 'Ваш номер телефона:', elemtype: 'text1line', name: 'tel-num', width: 200 },
+      { label: 'Перезвонить Вам:', elemtype: 'check', name: 'enablecomments' },
+      { label: 'Отослать:', elemtype: 'button', name: 'send', value: 'Send' }
+    ];
+  
+    function createDynamicForm(formArray, formName) {
+      var form = document.forms[formName];
+      formArray.forEach(function(item) {
+        var container = document.createElement('div');
+        container.className = 'field-container';
+  
+        if (item.elemtype !== 'button') {
+          var label = document.createElement('label');
+          label.textContent = item.label;
+          container.appendChild(label);
+        }
+  
+        var input;
+  
+        if (item.elemtype === 'text1line') {
+          input = document.createElement('input');
+          input.type = 'text';
+          input.name = item.name;
+          if (item.width) {
+            input.style.width = item.width + 'px';
+          }
+        } else if (item.elemtype === 'check') {
+          input = document.createElement('input');
+          input.type = 'checkbox';
+          input.name = item.name;
+        } else if (item.elemtype === 'button') {
+          input = document.createElement('input');
+          input.type = 'button';
+          input.name = item.name;
+          input.value = item.value;
+        }
+  
+        if (input && item.elemtype !== 'button') {
+          input.addEventListener('input', function() {
+            validateField(input);
+          });
+        }
+        container.appendChild(input);
+  
+        var errorSpan = document.createElement('span');
+        errorSpan.className = 'error';
+        container.appendChild(errorSpan);
+  
+        form.appendChild(container);
+  
+        if (item.elemtype === 'button') {
+          input.addEventListener('click', function() {
+            if (validateForm(form)) {
+              alert("Форма успешно отправлена!");
+            }
+          });
+        }
+      });
+    }
+  
+    function validateField(input) {
+      var errorSpan = input.parentNode.querySelector('.error');
+      var errorMessage = '';
+
+      if (input.type === 'text') {
+        if (input.value.trim() === '') {
+          errorMessage = 'Поле не может быть пустым';
+        }
+        if (input.name === 'email' && input.value.trim() !== '') {
+          if (!(input.value.includes('@') && input.value.includes('.'))) {
+            errorMessage = 'Введите корректный E-Mail';
+          }
+        }
+        if (input.name === 'tel-num' && input.value.trim() !== '') {
+          if (!/^\+\d+$/.test(input.value.trim())) {
+            errorMessage = 'Введите корректный номер телефона';
+          }
+        }
+      }
+      errorSpan.textContent = errorMessage;
+      return errorMessage === '';
+    }
+  
+    function validateForm(form) {
+      var valid = true;
+      for (var i = 0; i < form.elements.length; i++) {
+        var el = form.elements[i];
+        if (el.type !== 'button') {
+          if (!validateField(el)) {
+            valid = false;
+          }
+        }
+      }
+      return valid;
+    }
+  
+    createDynamicForm(FormA, 'dynamicForm');
+  </script>
+</body>
+</html>
