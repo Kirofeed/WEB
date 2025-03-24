@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Динамическое меню</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    /* Горизонтальное меню */
+    .horizontal-menu {
+      display: flex;
+      background-color: #333;
+    }
+    .horizontal-menu .menu-item {
+      position: relative;
+      padding: 14px 16px;
+      color: #fff;
+      cursor: pointer;
+    }
+    .horizontal-menu .menu-item:hover {
+      background-color: #111;
+    }
+    /* Вертикальное подменю */
+    .vertical-menu {
+      position: absolute;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      display: none;
+      flex-direction: column;
+      min-width: 150px;
+      z-index: 1000;
+    }
+    .vertical-menu .menu-item {
+      padding: 10px;
+      color: #333;
+      background-color: #f9f9f9;
+      border-bottom: 1px solid #ddd;
+    }
+    .vertical-menu .menu-item:hover {
+      background-color: #e0e0e0;
+    }
+    /* Стилизация ссылок */
+    .menu-item a {
+      color: inherit;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Контейнер для верхнего горизонтального меню -->
+  <div id="mainHorizontalMenu" class="horizontal-menu"></div>
+
+  <script>
+    // Задан массив пунктов меню
+    var MenuA = [
+      {name:'О сайте', submenu: 
+        [ 
+          {name:'Студия звукозаписи', url: 'maket_table.html'},
+          {name:'Аранжировка и продакшн', url: 'maket_table.html#Аранжировка и продакшн'}
+        ] 
+      }, 
+      {name: 'Оставить заявку', url: 'form.html'}, 
+      {name:'Наши партнеры', submenu: 
+        [ 
+          {name:'MusicMarket', url: 'https://musicmarket.by'}, 
+          {name:'Platinum Studio', url: 'https://platinumstudio.by'} 
+        ] 
+      } 
+    ];
+
+    // Функция для сворачивания всех открытых вертикальных подменю
+    function collapseAllMenus() {
+      var openMenus = document.querySelectorAll('.vertical-menu');
+      openMenus.forEach(function(menu) {
+        menu.style.display = 'none';
+      });
+    }
+
+    // Функция для сворачивания подменю-сиблингов текущего элемента
+    function collapseSiblingSubmenus(menuItem) {
+      var parentContainer = menuItem.parentElement;
+      if (!parentContainer) return;
+      Array.from(parentContainer.children).forEach(function(sibling) {
+        if (sibling !== menuItem) {
+          var submenu = sibling.querySelector('.vertical-menu');
+          if (submenu) {
+            submenu.style.display = 'none';
+          }
+        }
+      });
+    }
+
+    /**
+     * Функция для динамического построения меню.
+     * @param {Array} MenuItemsA - массив объектов с пунктами меню.
+     * @param {HTMLElement} ParentElem - элемент, относительно которого строится меню.
+     */
+    function ShowMenu(MenuItemsA, ParentElem) {
+      // Если ParentElem – основной контейнер, создаём горизонтальное меню,
+      // иначе – вертикальное подменю.
+      var isHorizontal = (ParentElem.id === 'mainHorizontalMenu');
+      var menuContainer = document.createElement('div');
+      menuContainer.className = isHorizontal ? 'horizontal-menu' : 'vertical-menu';
+
+      MenuItemsA.forEach(function(item) {
+        var menuItem = document.createElement('div');
+        menuItem.className = 'menu-item';
+        
+        // Если задан URL, создаём ссылку
+        if (item.url) {
+          var link = document.createElement('a');
+          link.href = item.url;
+          link.textContent = item.name;
+          menuItem.appendChild(link);
+        } else {
+          menuItem.textContent = item.name;
+        }
+
+        // Если есть подменю, добавляем обработчик клика
+        if (item.submenu && Array.isArray(item.submenu)) {
+          menuItem.addEventListener('click', function(e) {
+            // Предотвращаем всплытие события
+            e.stopPropagation();
+
+            // Если элемент находится на верхнем уровне, сворачиваем все меню,
+            // иначе сворачиваем только сиблинг-подменю текущего уровня.
+            if (ParentElem.id === 'mainHorizontalMenu') {
+              collapseAllMenus();
+            } else {
+              collapseSiblingSubmenus(menuItem);
+            }
+
+            var submenu = menuItem.querySelector('.vertical-menu');
+            if (submenu && submenu.style.display === 'block') {
+              // Если подменю уже открыто – закрываем его
+              submenu.style.display = 'none';
+            } else {
+              // Если подменю ещё не создано, создаём его
+              if (!submenu) {
+                ShowMenu(item.submenu, menuItem);
+                submenu = menuItem.querySelector('.vertical-menu');
+              }
+              submenu.style.display = 'block';
+            }
+          });
+        }
+        menuContainer.appendChild(menuItem);
+      });
+
+      // Добавляем сформированный контейнер меню в ParentElem
+      ParentElem.appendChild(menuContainer);
+
+      // Если это вертикальное подменю, позиционируем его относительно родительского пункта
+      if (!isHorizontal) {
+        if (ParentElem.parentElement && ParentElem.parentElement.classList.contains('vertical-menu')) {
+          // Если родительский элемент уже находится в вертикальном меню – открываем подменю справа
+          menuContainer.style.top = "0px";
+          menuContainer.style.left = ParentElem.offsetWidth + "px";
+        } else {
+          // Для первого уровня подменю – ниже родительского пункта
+          menuContainer.style.top = ParentElem.offsetHeight + "px";
+          menuContainer.style.left = "0px";
+        }
+      }
+    }
+
+    // Закрываем все подменю при клике вне меню
+    document.addEventListener('click', function() {
+      collapseAllMenus();
+    });
+
+    // При загрузке страницы строим верхнее горизонтальное меню
+    document.addEventListener('DOMContentLoaded', function() {
+      var mainMenu = document.getElementById('mainHorizontalMenu');
+      ShowMenu(MenuA, mainMenu);
+    });
+  </script>
+</body>
+</html>
