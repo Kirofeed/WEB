@@ -1,0 +1,23 @@
+[
+  {
+    "id": "f1c2d9e0-6b9a-4b1a-9d0a-1e2f8a7b4c5d",
+    "title": "Abbey Road",
+    "artist": "The Beatles",
+    "genre": "Rock",
+    "year": 1969
+  },
+  {
+    "id": "a3b8c1d9-5e4f-4c2b-8a1e-9d0c5f6a7b8e",
+    "title": "Thriller",
+    "artist": "Michael Jackson",
+    "genre": "Pop",
+    "year": 1982
+  },
+  {
+    "id": "b687a0ed-0713-402d-a596-d1bd21e66b2d",
+    "title": "Play With Fire",
+    "artist": "The Rolling Stones",
+    "genre": "Rock of 60s",
+    "year": 1965
+  }
+]

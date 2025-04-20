@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/header', { pageTitle: title }) %>
+
+    <main class="container">
+        <h1><%= title %></h1>
+
+        <%# Определяем URL и метод для формы: POST для новой, PUT для существующей %>
+        <% const actionUrl = recording ? `/api/recordings/${recording.id}` : '/api/recordings'; %>
+        <% const httpMethod = recording ? 'PUT' : 'POST'; %>
+
+        <form id="edit-form" data-method="<%= httpMethod %>" action="<%= actionUrl %>">
+            <input type="hidden" name="_method" value="<%= httpMethod %>"> <%# Для override метода, если понадобится %>
+
+            <div>
+                <label for="title">Название:</label>
+                <input type="text" id="title" name="title" value="<%= recording ? recording.title : '' %>" required>
+            </div>
+            <div>
+                <label for="artist">Исполнитель:</label>
+                <input type="text" id="artist" name="artist" value="<%= recording ? recording.artist : '' %>" required>
+            </div>
+            <div>
+                <label for="genre">Жанр:</label>
+                <input type="text" id="genre" name="genre" value="<%= recording ? recording.genre : '' %>" required>
+            </div>
+            <div>
+                <label for="year">Год:</label>
+                <input type="number" id="year" name="year" value="<%= recording ? recording.year : '' %>" required>
+            </div>
+
+            <button type="submit" class="btn"><%= recording ? 'Сохранить изменения' : 'Добавить запись' %></button>
+            <a href="/" class="btn btn-cancel">Отмена</a>
+        </form>
+    </main>
+
+    <%- include('partials/footer', { year: new Date().getFullYear() }) %>
+
+    <script src="/js/app.js"></script> <%# Подключаем тот же JS %>
+</body>
+</html>

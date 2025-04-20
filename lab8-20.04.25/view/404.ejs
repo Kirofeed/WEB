@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/header', { pageTitle: 'Ошибка' }) %>
+    <main class="container">
+        <h1>404 - Страница не найдена</h1>
+        <p>Извините, запрошенная вами страница не существует.</p>
+        <a href="/" class="btn">На главную</a>
+    </main>
+    <%- include('partials/footer', { year: new Date().getFullYear() }) %>
+</body>
+</html>

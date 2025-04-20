@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title> <%# title передается из server.js %>
+    <link rel="stylesheet" href="/css/style.css"> <%# Ссылка на статический CSS %>
+</head>
+<body>
+    <%- include('partials/header', { pageTitle: title }) %> <%# Подключение шапки (если есть) %>
+
+    <main class="container">
+        <h1><%= title %></h1>
+        <a href="/add" class="btn btn-add">Добавить новую запись</a>
+
+        <% if (recordings && recordings.length > 0) { %>
+            <ul id="recordings-list">
+                <% recordings.forEach(rec => { %>
+                    <li data-id="<%= rec.id %>"> <%# Атрибут для JS %>
+                        <span>
+                            <strong><%= rec.title %></strong> - <%= rec.artist %> (<%= rec.genre %>, <%= rec.year %>)
+                        </span>
+                        <div>
+                            <a href="/edit/<%= rec.id %>" class="btn btn-edit">Редакт.</a>
+                             <%# Кнопка удаления будет работать через JS (fetch к API) %>
+                            <button class="btn btn-delete" onclick="deleteRecording('<%= rec.id %>')">Удалить</button>
+                        </div>
+                    </li>
+                <% }) %>
+            </ul>
+        <% } else { %>
+            <p>В фонотеке пока нет записей.</p>
+        <% } %>
+    </main>
+
+    <%- include('partials/footer', { year: currentYear }) %> <%# Подключение подвала (если есть) %>
+
+    <script src="/js/app.js"></script> <%# Подключение клиентского JS %>
+</body>
+</html>
